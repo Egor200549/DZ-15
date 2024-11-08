@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import Card from "./components/Card";
 import { Product } from './interfaces/Product';
+import Favourites from "./components/Favourites";
+import { TypeProduct } from "./interfaces/types";
 
 function App() {
   const [menu, setMenu] = useState(false);
@@ -9,6 +11,8 @@ function App() {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [year, setYear] = useState('');
+
+  const [favourites, setFavourites] = useState<Product[]>([]);
 
   const changeMenu = () => {
     setMenu(prevState => !prevState);
@@ -63,6 +67,20 @@ function App() {
     } catch (error: any) {
       console.error('Error fetching:', error.message);
     }
+
+    try {
+      const response = await fetch('https://a4a09c5ecb7ce7ac.mokky.dev/favourities');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong');
+      }
+
+      setFavourites(data);
+
+    } catch (error: any) {
+      console.error('Error fetching:', error.message);
+    }
   }
 
   useEffect(() => { fetchData() }, []);
@@ -70,7 +88,7 @@ function App() {
   return (
     <>
       <header>
-        <button className="card__button edit" onClick={changeMenu} style={{padding: '10px 30px', width: 'fit-content', borderRadius: 0}}>Добавить продукт</button>
+        <button className="card__button edit" onClick={changeMenu} style={{ padding: '10px 30px', width: 'fit-content', borderRadius: 0 }}>Добавить продукт</button>
         <form className={`${menu ? "form" : 'none'}`} onSubmit={(e) => addItem(e)}>
           <input type="text" value={name} placeholder="Название" onChange={(e) => setName(e.target.value)} />
           <input type="text" value={price} placeholder="Цена" onChange={(e) => setPrice(e.target.value)} />
@@ -80,8 +98,9 @@ function App() {
       </header>
 
       <div className="cards">
-        {products.map((item, index) => <Card data={item} key={index} fetchData={fetchData} />)}
+        {products.map((item, index) => <Card type={TypeProduct.CATALOG} data={item} key={index} fetchData={fetchData} setFavourites={setFavourites} />)}
       </div>
+      <Favourites data={favourites} fetchData={fetchData} setFavourites={setFavourites} />
     </>
   )
 }

@@ -48,6 +48,7 @@
 }
 
 .card__button {
+    width: 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -66,6 +67,10 @@
 .edit {
     background-color: green;
     color: white;
+}
+
+.yellow {
+    background-color: darkorange;
 }
 
 .card > .form {
